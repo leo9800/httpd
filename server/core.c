@@ -3708,8 +3708,7 @@ enum server_token_type {
     SrvTk_MINIMAL,       /* eg: Apache/2.0.41 */
     SrvTk_OS,            /* eg: Apache/2.0.41 (UNIX) */
     SrvTk_FULL,          /* eg: Apache/2.0.41 (UNIX) PHP/4.2.2 FooBar/1.2b */
-    SrvTk_PRODUCT_ONLY,  /* eg: Apache */
-    SrvTk_OFF
+    SrvTk_PRODUCT_ONLY   /* eg: Apache */
 };
 static enum server_token_type ap_server_tokens = SrvTk_FULL;
 
@@ -3732,14 +3731,12 @@ AP_DECLARE(void) ap_get_server_revision(ap_version_t *version)
 
 AP_DECLARE(const char *) ap_get_server_description(void)
 {
-    if (ap_server_tokens == SrvTk_OFF) return NULL;
     return server_description ? server_description :
         AP_SERVER_BASEVERSION " (" PLATFORM ")";
 }
 
 AP_DECLARE(const char *) ap_get_server_banner(void)
 {
-    if (ap_server_tokens == SrvTk_OFF) return NULL;
     return server_banner ? server_banner : AP_SERVER_BASEVERSION;
 }
 
@@ -3828,11 +3825,8 @@ static const char *set_serv_tokens(cmd_parms *cmd, void *dummy,
     else if (!ap_cstr_casecmp(arg, "Full")) {
         ap_server_tokens = SrvTk_FULL;
     }
-    else if (!ap_cstr_casecmp(arg, "Off")) {
-        ap_server_tokens = SrvTk_OFF;
-    }
     else {
-        return "ServerTokens takes 1 argument: 'Off', 'Prod(uctOnly)', 'Major', 'Minor', 'Min(imal)', 'OS', or 'Full'";
+        return "ServerTokens takes 1 argument: 'Prod(uctOnly)', 'Major', 'Minor', 'Min(imal)', 'OS', or 'Full'";
     }
 
     return NULL;
