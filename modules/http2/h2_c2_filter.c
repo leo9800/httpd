@@ -245,6 +245,7 @@ static h2_headers *create_response(request_rec *r)
 {
     const char *clheader;
     const char *ctype;
+    core_dir_config *cdconf = ap_get_core_module_config(r->per_dir_config);
 
     /*
      * Now that we are ready to send a response, we need to combine the two
@@ -365,7 +366,7 @@ static h2_headers *create_response(request_rec *r)
     if (r->proxyreq == PROXYREQ_NONE
         || !apr_table_get(r->headers_out, "Server")) {
         const char *us = ap_get_server_banner();
-        if (us && *us) {
+        if (us && *us && cdconf->server_header != SERVER_HEADER_OFF) {
             apr_table_setn(r->headers_out, "Server", us);
         }
     }

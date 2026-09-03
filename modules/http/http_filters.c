@@ -1082,6 +1082,7 @@ static void basic_http_header(request_rec *r, apr_bucket_brigade *bb,
     const char *us = ap_get_server_banner();
     header_struct h;
     struct iovec vec[4];
+    core_dir_config *cdconf = ap_get_core_module_config(r->per_dir_config);
 
     if (r->assbackwards) {
         /* there are no headers to send */
@@ -1139,7 +1140,7 @@ static void basic_http_header(request_rec *r, apr_bucket_brigade *bb,
 
     if (!server && *us)
         server = us;
-    if (server)
+    if (server && cdconf->server_header != SERVER_HEADER_OFF)
         form_header_field(&h, "Server", server);
 
     if (APLOGrtrace3(r)) {
