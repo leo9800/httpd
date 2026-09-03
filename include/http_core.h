@@ -590,6 +590,11 @@ typedef struct {
 
     /* logging options */
 
+#define SERVER_HEADER_OFF   (0)
+#define SERVER_HEADER_ON    (1)
+#define SERVER_HEADER_UNSET (2)
+    unsigned int server_header : 2;  /* whether server header should be added */
+
     server_signature_e server_signature;
 
     /* Access control */

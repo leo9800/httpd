@@ -2250,6 +2250,7 @@ AP_DECLARE(void) ap_set_std_response_headers(request_rec *r)
 {
     const char *server = NULL, *date;
     char *s;
+    core_dir_config *cdconf = ap_get_core_module_config(r->per_dir_config);
 
     /* Before generating a response, we make sure that `Date` and `Server`
      * headers are present. When proxying requests, we preserver existing
@@ -2272,7 +2273,7 @@ AP_DECLARE(void) ap_set_std_response_headers(request_rec *r)
 
     apr_table_setn(r->headers_out, "Date", date);
 
-    if (!server)
+    if (!server && cdconf->server_header != SERVER_HEADER_OFF)
         server = ap_get_server_banner();
     if (server && *server)
         apr_table_setn(r->headers_out, "Server", server);

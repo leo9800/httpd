@@ -187,6 +187,7 @@ static void *create_core_dir_config(apr_pool_t *a, char *dir)
     conf->limit_req_body = AP_LIMIT_REQ_BODY_UNSET;
     conf->limit_xml_body = AP_LIMIT_UNSET;
 
+    conf->server_header = SERVER_HEADER_UNSET;
     conf->server_signature = srv_sig_unset;
 
     conf->add_default_charset = ADD_DEFAULT_CHARSET_UNSET;
@@ -352,6 +353,10 @@ static void *merge_core_dir_configs(apr_pool_t *a, void *basev, void *newv)
     }
     /* Otherwise we simply use the base->sec_if array
      */
+
+    if (new->server_header != SERVER_HEADER_UNSET) {
+        conf->server_header = new->server_header;
+    }
 
     if (new->server_signature != srv_sig_unset) {
         conf->server_signature = new->server_signature;
@@ -3275,6 +3280,24 @@ static const char *server_hostname_port(cmd_parms *cmd, void *dummy, const char 
     return NULL;
 }
 
+static const char *set_server_header_flag(cmd_parms *cmd, void *d_,
+                                          const char *arg)
+{
+    core_dir_config *d = d_;
+
+    if (ap_cstr_casecmp(arg, "On") == 0) {
+        d->server_header = SERVER_HEADER_ON;
+    }
+    else if (ap_cstr_casecmp(arg, "Off") == 0) {
+        d->server_header = SERVER_HEADER_OFF;
+    }
+    else {
+        return "ServerHeader: use one of: off | on";
+    }
+
+    return NULL;
+}
+
 static const char *set_signature_flag(cmd_parms *cmd, void *d_,
                                       const char *arg)
 {
@@ -4824,6 +4847,8 @@ AP_INIT_TAKE1("ServerAdmin", set_server_string_slot,
   "The email address of the server administrator"),
 AP_INIT_TAKE1("ServerName", server_hostname_port, NULL, RSRC_CONF,
   "The hostname and port of the server"),
+AP_INIT_TAKE1("ServerHeader", set_server_header_flag, NULL, OR_ALL,
+  "En-/disable server header (on|off)"),
 AP_INIT_TAKE1("ServerSignature", set_signature_flag, NULL, OR_ALL,
   "En-/disable server signature (on|off|email)"),
 AP_INIT_TAKE1("ServerRoot", set_server_root, NULL, RSRC_CONF | EXEC_ON_READ,
